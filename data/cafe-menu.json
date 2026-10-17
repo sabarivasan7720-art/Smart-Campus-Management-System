@@ -1,0 +1,35 @@
+{
+  "cafe": "Excel Fusion Café",
+  "hours": "7:30 AM – 8:30 PM",
+  "locationId": "fusion-cafe",
+  "categories": [
+    {
+      "name": "Breakfast",
+      "items": [
+        { "id": "idly", "name": "Idly (2 pcs)", "price": 30, "veg": true },
+        { "id": "dosa", "name": "Masala Dosa", "price": 50, "veg": true },
+        { "id": "pongal", "name": "Ven Pongal", "price": 45, "veg": true },
+        { "id": "poori", "name": "Poori Massal", "price": 45, "veg": true }
+      ]
+    },
+    {
+      "name": "Meals & snacks",
+      "items": [
+        { "id": "meals", "name": "South Indian Meals", "price": 80, "veg": true },
+        { "id": "fried-rice", "name": "Veg Fried Rice", "price": 70, "veg": true },
+        { "id": "chicken-rice", "name": "Chicken Fried Rice", "price": 95, "veg": false },
+        { "id": "samosa", "name": "Samosa (2 pcs)", "price": 25, "veg": true },
+        { "id": "puff", "name": "Veg Puff", "price": 20, "veg": true }
+      ]
+    },
+    {
+      "name": "Beverages",
+      "items": [
+        { "id": "tea", "name": "Tea / Coffee", "price": 15, "veg": true },
+        { "id": "boost", "name": "Boost / Horlicks", "price": 25, "veg": true },
+        { "id": "juice", "name": "Fresh juice", "price": 40, "veg": true },
+        { "id": "cool-drinks", "name": "Soft drink", "price": 30, "veg": true }
+      ]
+    }
+  ]
+}

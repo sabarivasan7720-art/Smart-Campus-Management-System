@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Interactive campus map, location search, walking directions, and QR route simulation for Excel Engineering College." />
+  <title>Smart Campus Navigation | Excel Engineering College</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17343b;
+      --ink-soft: #52666a;
+      --navy: #183640;
+      --teal: #18766f;
+      --gold: #d6a62c;
+      --paper: #f4f5ef;
+      --white: #fff;
+      --line: #dce3de;
+      --green: #638b65;
+      --road: #d8d2c2;
+      --road-edge: #c4bcaa;
+      --department: #18766f;
+      --hostel: #bd554b;
+      --amenity: #b18120;
+      --admin: #274d62;
+      --medical: #905266;
+      font-family: "Aptos", "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; min-width: 0; }
+    button, input, select { font: inherit; }
+    button, select { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, svg [tabindex]:focus-visible {
+      outline: 3px solid #e4b743;
+      outline-offset: 3px;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 72px;
+      padding: 12px clamp(16px, 4vw, 52px);
+      color: #f7f5eb;
+      background: var(--navy);
+      border-bottom: 3px solid var(--gold);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+    .brand-mark { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid #d8b650; border-radius: 12px 12px 12px 4px; color: var(--gold); font-family: Georgia, serif; font-size: 22px; font-weight: 700; }
+    .brand-copy { display: grid; gap: 2px; }
+    .brand-copy strong { font-size: 13px; line-height: 1.25; letter-spacing: .04em; }
+    .brand-copy span { color: #bfceca; font-size: 11px; }
+    .topnav { display: flex; align-items: center; gap: 6px; }
+    .topnav a { padding: 9px 12px; border-radius: 6px; color: #e3e9e4; font-size: 13px; font-weight: 600; text-decoration: none; transition: background 150ms ease, color 150ms ease; }
+    .topnav a:hover, .topnav a[aria-current="page"] { color: #fff1c4; background: #ffffff17; }
+    .page { width: min(1440px, 100%); margin: 0 auto; padding: 22px clamp(14px, 3vw, 38px) 56px; }
+    .page-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    .eyebrow { margin: 0 0 6px; color: var(--teal); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 0; color: var(--navy); font-family: Georgia, "Times New Roman", serif; font-size: clamp(27px, 3vw, 38px); font-weight: 600; line-height: 1.08; }
+    .page-note { max-width: 390px; margin: 0; color: var(--ink-soft); font-size: 13px; line-height: 1.5; }
+    .control-band { display: grid; gap: 12px; margin-bottom: 14px; }
+    .search-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .search-wrap { position: relative; }
+    .search-input, .select-control { width: 100%; min-height: 44px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); color: var(--ink); }
+    .search-input::placeholder { color: #7d8b87; }
+    .search-results { position: absolute; top: calc(100% + 5px); right: 0; left: 0; z-index: 10; display: none; max-height: 290px; overflow: auto; padding: 5px; border: 1px solid var(--line); border-radius: 7px; background: #fff; box-shadow: 0 10px 26px #17343b1a; }
+    .search-results.open { display: grid; }
+    .search-result { padding: 10px; border: 0; border-radius: 5px; background: transparent; color: var(--ink); text-align: left; }
+    .search-result:hover { background: #f0f4ef; }
+    .search-result small { display: block; margin-top: 2px; color: var(--ink-soft); }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .filter-chip { min-height: 34px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink-soft); font-size: 12px; font-weight: 700; transition: background 150ms ease, border-color 150ms ease, color 150ms ease; }
+    .filter-chip:hover { border-color: var(--teal); color: var(--teal); }
+    .filter-chip[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: #fff2ca; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(290px, .78fr); gap: 14px; align-items: stretch; }
+    .map-panel, .detail-panel, .route-controls, .directory-panel { border: 1px solid var(--line); border-radius: 9px; background: var(--white); }
+    .map-panel { min-width: 0; overflow: hidden; }
+    .map-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 47px; padding: 9px 13px; border-bottom: 1px solid var(--line); }
+    .map-label { display: flex; min-width: 0; align-items: center; gap: 8px; color: var(--ink); font-size: 12px; font-weight: 700; }
+    .live-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #4f9b73; box-shadow: 0 0 0 3px #4f9b7319; }
+    .map-tools { display: flex; flex: 0 0 auto; gap: 5px; }
+    .icon-button { width: 32px; height: 30px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--navy); font-size: 17px; font-weight: 700; }
+    .icon-button:hover { background: #f2f5ef; }
+    .map-stage { position: relative; height: min(65vh, 680px); min-height: 420px; background: #e8ecdf; }
+    #campus-map { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; user-select: none; }
+    #campus-map.is-dragging { cursor: grabbing; }
+    .map-ground { fill: #e6eadb; }
+    .map-border { fill: none; stroke: #b8c5b4; stroke-width: 4; }
+    .road-edge { fill: none; stroke: var(--road-edge); stroke-width: 31; stroke-linecap: round; stroke-linejoin: round; }
+    .road { fill: none; stroke: var(--road); stroke-width: 25; stroke-linecap: round; stroke-linejoin: round; }
+    .road-dash { fill: none; stroke: #f9f6e9; stroke-width: 2; stroke-dasharray: 12 12; stroke-linecap: round; }
+    .building rect { stroke: #fff; stroke-width: 2; filter: url(#building-shadow); }
+    .building text { fill: #52665f; font-size: 12px; font-weight: 700; text-anchor: middle; }
+    .green-area { fill: #cad9bd; stroke: #9fb891; stroke-width: 2; }
+    .ground-lines { fill: none; stroke: #eff5e9; stroke-width: 2; }
+    .water-area { fill: #b9d7d3; stroke: #76a9a2; stroke-width: 2; }
+    .map-label { fill: #52665f; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+    .north-arrow { fill: var(--navy); font-family: Georgia, serif; font-size: 18px; font-weight: 700; }
+    .route-outline, .route-stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .route-outline { stroke: #15323b; stroke-width: 13; opacity: .28; }
+    .route-stroke { stroke: #e0ad30; stroke-width: 7; stroke-dasharray: 1; }
+    .map-pin { cursor: pointer; transition: opacity 150ms ease; }
+    .map-pin.dimmed { opacity: .2; }
+    .map-pin .pin-shadow { fill: #17343b30; }
+    .map-pin .pin-core { stroke: #fff; stroke-width: 3; filter: url(#pin-shadow); }
+    .map-pin text { fill: #fff; font-size: 12px; font-weight: 800; pointer-events: none; text-anchor: middle; dominant-baseline: central; }
+    .map-pin.selected .pin-core { stroke: #f6d77e; stroke-width: 5; }
+    .map-pin.origin .pin-core { stroke: #fff; stroke-width: 4; }
+    .map-legend { position: absolute; bottom: 10px; left: 10px; padding: 7px 9px; border: 1px solid #dce3de; border-radius: 5px; background: #ffffffed; color: #52666a; font-size: 10px; }
+    .map-legend span { display: flex; align-items: center; gap: 6px; }
+    .legend-route { width: 17px; border-top: 3px solid var(--gold); }
+    .schematic-note { padding: 8px 13px; border-top: 1px solid var(--line); color: #63736f; font-size: 10px; line-height: 1.4; }
+    .side-stack { display: grid; grid-template-rows: auto 1fr; gap: 14px; min-width: 0; }
+    .route-controls { padding: 15px; }
+    .section-label { margin: 0 0 12px; color: var(--teal); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .field { display: grid; gap: 5px; margin-bottom: 10px; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+    .select-control { min-height: 40px; padding-block: 8px; font-size: 12px; }
+    .scan-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; margin-top: 12px; }
+    .button-primary, .button-quiet { min-height: 39px; padding: 9px 12px; border: 1px solid transparent; border-radius: 6px; font-size: 12px; font-weight: 800; }
+    .button-primary { background: var(--teal); color: #fff; }
+    .button-primary:hover { background: #105f59; }
+    .button-quiet { border-color: var(--line); background: #fff; color: var(--navy); }
+    .button-quiet:hover { background: #f3f5ef; }
+    .quick-scan { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+    .quick-scan button { padding: 5px 8px; border: 0; border-radius: 4px; background: #edf2ec; color: var(--teal); font-size: 10px; font-weight: 700; }
+    .quick-scan button:hover { background: #dce9de; }
+    .detail-panel { padding: 15px; }
+    .detail-top { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
+    .place-number { display: grid; width: 30px; height: 30px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--navy); color: #fff1c4; font-size: 12px; font-weight: 800; }
+    .detail-panel h2 { margin: 0; color: var(--navy); font-family: Georgia, "Times New Roman", serif; font-size: 23px; font-weight: 600; line-height: 1.15; }
+    .place-category { margin: 5px 0 0; color: var(--teal); font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .place-description { margin: 13px 0 8px; color: var(--ink-soft); font-size: 12px; line-height: 1.55; }
+    .place-hours { margin: 0; padding-top: 9px; border-top: 1px solid var(--line); color: #667772; font-size: 10px; }
+    .detail-panel .button-primary { width: 100%; margin-top: 12px; }
+    .route-summary { display: flex; flex-wrap: wrap; gap: 7px; margin: 15px 0 10px; }
+    .route-summary span { padding: 6px 8px; border-radius: 4px; background: #f1f3ec; color: var(--navy); font-size: 11px; font-weight: 800; }
+    .directions-heading { margin: 13px 0 8px; color: var(--ink); font-size: 12px; font-weight: 800; }
+    #directions-list { display: grid; gap: 7px; max-height: 220px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+    #directions-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; color: var(--ink-soft); font-size: 11px; line-height: 1.45; }
+    .step-number { display: grid; width: 21px; height: 21px; place-items: center; border-radius: 50%; background: #e9eee8; color: var(--teal); font-size: 10px; font-weight: 800; }
+    .directory-panel { margin-top: 16px; overflow: hidden; }
+    .directory-head { display: flex; align-items: end; justify-content: space-between; gap: 10px; padding: 14px; border-bottom: 1px solid var(--line); }
+    .directory-head h2 { margin: 0; color: var(--navy); font-family: Georgia, "Times New Roman", serif; font-size: 21px; font-weight: 600; }
+    #result-count { color: var(--ink-soft); font-size: 11px; }
+    #place-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); }
+    .place-card { display: flex; min-width: 0; align-items: center; gap: 9px; padding: 11px; border: 0; background: #fff; color: var(--ink); text-align: left; transition: background 140ms ease; }
+    .place-card:hover { background: #f1f5ef; }
+    .place-card.is-selected { background: #edf4ed; box-shadow: inset 3px 0 var(--teal); }
+    .place-card-number { display: grid; width: 25px; height: 25px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; font-size: 10px; font-weight: 800; }
+    .place-card strong { display: block; overflow: hidden; font-size: 11px; text-overflow: ellipsis; }
+    .place-card small { display: block; margin-top: 2px; color: var(--ink-soft); font-size: 9px; }
+    .no-results { grid-column: 1 / -1; padding: 20px; background: #fff; color: var(--ink-soft); font-size: 12px; text-align: center; }
+    .footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding: 13px 2px; color: var(--ink-soft); font-size: 10px; }
+    .footer strong { color: var(--navy); }
+
+    @media (max-width: 980px) {
+      .workspace { grid-template-columns: minmax(0, 1.3fr) minmax(260px, .8fr); }
+      #place-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .topbar { min-height: 64px; gap: 8px; padding-inline: 14px; }
+      .brand-copy strong { font-size: 11px; }
+      .brand-copy span { font-size: 10px; }
+      .topnav { gap: 0; }
+      .topnav a { padding: 8px 7px; font-size: 11px; }
+      .topnav a:nth-child(2) { display: none; }
+      .page { padding-top: 17px; }
+      .page-heading { display: block; }
+      .page-note { margin-top: 8px; }
+      .search-row { grid-template-columns: 1fr; }
+      .workspace { grid-template-columns: 1fr; }
+      .map-stage { height: 56vh; min-height: 370px; max-height: 600px; }
+      .side-stack { grid-template-rows: auto auto; }
+      #place-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 420px) {
+      .brand-mark { width: 35px; height: 35px; font-size: 19px; }
+      .brand { gap: 8px; }
+      .brand-copy strong { max-width: 175px; }
+      .topnav a { padding-inline: 6px; font-size: 10px; }
+      .page { padding-inline: 12px; }
+      .filter-row { gap: 5px; }
+      .filter-chip { padding-inline: 9px; font-size: 10px; }
+      .map-stage { min-height: 340px; }
+      .scan-row { grid-template-columns: 1fr; }
+      .footer { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 360px) {
+      .topbar { gap: 6px; padding-inline: 10px; }
+      .brand { gap: 6px; }
+      .brand-copy strong { max-width: 136px; font-size: 9px; }
+      .brand-copy span { display: none; }
+      .topnav a { padding-inline: 4px; font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Excel Engineering College Smart Campus Navigation home">
+      <span class="brand-mark" aria-hidden="true">E</span>
+      <span class="brand-copy"><strong>EXCEL ENGINEERING COLLEGE</strong><span>Smart Campus Navigation</span></span>
+    </a>
+    <nav class="topnav" aria-label="Main navigation">
+      <a href="#map" aria-current="page">Map</a>
+      <a href="#places">Places</a>
+      <a href="#directions">Directions</a>
+      <a href="#qr">QR Scan</a>
+    </nav>
+  </header>
+
+  <main id="top" class="page">
+    <div class="page-heading">
+      <div><p class="eyebrow">Komarapalayam · Namakkal</p><h1>Find your way around campus.</h1></div>
+      <p class="page-note">Search any location, choose a starting point, or tap a numbered pin to plan a walking route.</p>
+    </div>
+
+    <section class="control-band" aria-label="Find a campus location">
+      <div class="search-row">
+        <div class="search-wrap">
+          <label class="sr-only" for="location-search">Search campus locations</label>
+          <input id="location-search" class="search-input" type="search" autocomplete="off" placeholder="Search a block, service, or campus amenity" aria-controls="search-results" aria-expanded="false" />
+          <div id="search-results" class="search-results" role="listbox" aria-label="Matching places"></div>
+        </div>
+      </div>
+      <div id="category-filters" class="filter-row" aria-label="Filter places by category">
+        <button class="filter-chip" type="button" data-category="all" aria-pressed="true">All Spots</button>
+        <button class="filter-chip" type="button" data-category="departments" aria-pressed="false">Departments</button>
+        <button class="filter-chip" type="button" data-category="hostels" aria-pressed="false">Hostels &amp; Mess</button>
+        <button class="filter-chip" type="button" data-category="amenities" aria-pressed="false">Amenities &amp; Food</button>
+        <button class="filter-chip" type="button" data-category="administrative" aria-pressed="false">Administrative &amp; Services</button>
+        <button class="filter-chip" type="button" data-category="medical" aria-pressed="false">Medical &amp; Sports</button>
+      </div>
+    </section>
+
+    <section id="map" class="workspace" aria-label="Interactive campus map and location details">
+      <div class="map-panel">
+        <div class="map-panel-head">
+          <span class="map-label"><span class="live-dot" aria-hidden="true"></span><span id="map-status">20 locations · schematic campus map</span></span>
+          <div class="map-tools" aria-label="Map controls">
+            <button id="zoom-out" class="icon-button" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+            <button id="zoom-in" class="icon-button" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+            <button id="zoom-reset" class="icon-button" type="button" title="Reset map view" aria-label="Reset map view">⌂</button>
+          </div>
+        </div>
+        <div class="map-stage">
+          <svg id="campus-map" viewBox="0 0 1200 800" role="img" aria-labelledby="svg-title svg-description" preserveAspectRatio="xMidYMid meet">
+            <title id="svg-title">Excel Engineering College campus map</title>
+            <desc id="svg-description">Schematic interactive map with roads, buildings, grounds, parking, and twenty clickable location pins.</desc>
+            <defs>
+              <pattern id="grass-pattern" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#e6eadb"/><circle cx="4" cy="5" r="1" fill="#d5dfca"/><circle cx="17" cy="16" r="1" fill="#d3ddc8"/></pattern>
+              <filter id="building-shadow" x="-20%" y="-20%" width="150%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#33493c" flood-opacity=".15"/></filter>
+              <filter id="pin-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#19353b" flood-opacity=".35"/></filter>
+            </defs>
+            <rect class="map-ground" width="1200" height="800" fill="url(#grass-pattern)"/>
+            <rect class="map-border" x="20" y="20" width="1160" height="760" rx="24"/>
+            <g aria-hidden="true">
+              <path class="road-edge" d="M600 750V190M140 620H1050M140 480H1060M310 280H930M140 700H1060M360 620V280M850 620V190M420 190H850M600 620H980"/>
+              <path class="road" d="M600 750V190M140 620H1050M140 480H1060M310 280H930M140 700H1060M360 620V280M850 620V190M420 190H850M600 620H980"/>
+              <path class="road-dash" d="M600 750V190M140 620H1050M140 480H1060M310 280H930M140 700H1060M360 620V280M850 620V190M420 190H850M600 620H980"/>
+              <rect class="green-area" x="115" y="645" width="265" height="96" rx="30"/>
+              <path class="ground-lines" d="M145 693H350M247 655V730"/>
+              <rect class="green-area" x="875" y="580" width="148" height="58" rx="24"/>
+              <rect class="water-area" x="150" y="400" width="104" height="55" rx="18"/>
+              <text class="map-label" x="235" y="735" text-anchor="middle">MAIN GROUND</text>
+              <text class="map-label" x="950" y="615" text-anchor="middle">GREEN COURT</text>
+              <text class="map-label" x="202" y="432" text-anchor="middle">MEDICAL</text>
+              <text class="north-arrow" x="1120" y="92" text-anchor="middle">N</text>
+              <path d="M1120 105L1112 125H1128Z" fill="#183640"/>
+              <g class="building"><rect x="646" y="438" width="92" height="51" rx="8" fill="#6f8d83"/><text x="692" y="468">MAIN BLOCK</text></g>
+              <g class="building"><rect x="914" y="218" width="92" height="48" rx="8" fill="#bd8174"/><text x="960" y="246">GIRLS HOSTEL</text></g>
+              <g class="building"><rect x="885" y="315" width="78" height="38" rx="7" fill="#d8b564"/><text x="924" y="339">MESS</text></g>
+              <g class="building"><rect x="126" y="225" width="86" height="48" rx="8" fill="#bd8174"/><text x="169" y="253">BOYS HOSTEL</text></g>
+              <g class="building"><rect x="235" y="312" width="80" height="39" rx="7" fill="#d8b564"/><text x="275" y="336">MESS</text></g>
+              <g class="building"><rect x="971" y="452" width="86" height="50" rx="8" fill="#819184"/><text x="1014" y="482">CONVENTION</text></g>
+              <g class="building"><rect x="133" y="455" width="95" height="46" rx="8" fill="#b77f82"/><text x="180" y="482">MEDICAL</text></g>
+              <g class="building"><rect x="235" y="562" width="78" height="39" rx="7" fill="#d8b564"/><text x="274" y="586">MED CAFE</text></g>
+              <g class="building"><rect x="661" y="585" width="86" height="45" rx="8" fill="#6f8d83"/><text x="704" y="612">ACCOUNTS</text></g>
+              <g class="building"><rect x="520" y="361" width="84" height="42" rx="7" fill="#54847c"/><text x="562" y="387">LIBRARY</text></g>
+              <g class="building"><rect x="392" y="342" width="76" height="42" rx="7" fill="#54847c"/><text x="430" y="368">MECHANICAL</text></g>
+              <g class="building"><rect x="696" y="330" width="87" height="43" rx="7" fill="#54847c"/><text x="740" y="356">COMPUTING</text></g>
+              <g class="building"><rect x="725" y="411" width="72" height="39" rx="7" fill="#d2ac59"/><text x="761" y="435">FUSION CAFE</text></g>
+              <g class="building"><rect x="742" y="515" width="78" height="41" rx="7" fill="#6f8d83"/><text x="781" y="540">PLACEMENT</text></g>
+              <g class="building"><rect x="652" y="554" width="78" height="38" rx="7" fill="#6f8d83"/><text x="691" y="578">HELPDESK</text></g>
+              <rect x="954" y="663" width="124" height="65" rx="8" fill="#c4c7bd" stroke="#fff" stroke-width="2"/>
+              <path d="M967 678H1064M967 695H1064M967 712H1064" stroke="#89968c" stroke-width="5" stroke-linecap="round"/>
+              <text class="map-label" x="1016" y="750" text-anchor="middle">BUS YARD</text>
+              <path d="M535 750H665" stroke="#74776d" stroke-width="12" stroke-linecap="round"/>
+              <path d="M540 750H660" stroke="#f4e8aa" stroke-width="2" stroke-dasharray="9 7"/>
+              <text class="map-label" x="600" y="780" text-anchor="middle">MAIN GATE · NH-544</text>
+            </g>
+            <g id="route-layer" aria-hidden="true" style="display:none"><path id="route-shadow" class="route-outline"/><path id="route-path" class="route-stroke"/></g>
+            <g id="place-pins"></g>
+          </svg>
+          <div class="map-legend" aria-hidden="true"><span><i class="legend-route"></i> Selected walking route</span></div>
+        </div>
+        <div class="schematic-note">Schematic visitor map for navigation. Building positions and distance estimates are illustrative; follow campus signs and verify locations with staff.</div>
+      </div>
+
+      <div class="side-stack">
+        <section id="directions" class="route-controls" aria-labelledby="route-heading">
+          <p class="section-label">Plan a route</p>
+          <h2 id="route-heading" class="sr-only">Walking route controls</h2>
+          <label class="field" for="from-select">From
+            <select id="from-select" class="select-control" aria-label="Starting location"></select>
+          </label>
+          <label class="field" for="to-select">To
+            <select id="to-select" class="select-control" aria-label="Destination location"></select>
+          </label>
+          <section id="qr" aria-label="Simulate QR scan">
+            <label class="field" for="qr-select">Set current location by QR scan
+              <select id="qr-select" class="select-control" aria-label="Location to simulate scanning"></select>
+            </label>
+            <div class="scan-row">
+              <button id="scan-button" class="button-primary" type="button">Simulate QR scan</button>
+              <button id="navigate-button" class="button-quiet" type="button">Show route</button>
+            </div>
+            <div class="quick-scan">
+              <button type="button" data-scan="welcome-block">Scan Main Gate QR</button>
+              <button type="button" data-scan="medical-block">Scan Medical Block QR</button>
+            </div>
+          </section>
+        </section>
+
+        <aside class="detail-panel" aria-live="polite" aria-labelledby="selected-name">
+          <p class="section-label">Selected location</p>
+          <div class="detail-top">
+            <div><h2 id="selected-name">Central Library</h2><p id="selected-category" class="place-category">Departments</p></div>
+            <span id="selected-number" class="place-number">12</span>
+          </div>
+          <p id="selected-description" class="place-description"></p>
+          <p id="selected-hours" class="place-hours"></p>
+          <button id="navigate-here" class="button-primary" type="button">Navigate Here</button>
+          <div class="route-summary" aria-live="polite"><span id="distance-value">0 m</span><span id="time-value">0 min</span></div>
+          <h3 class="directions-heading">Walking directions</h3>
+          <ol id="directions-list"></ol>
+        </aside>
+      </div>
+    </section>
+
+    <section id="places" class="directory-panel" aria-labelledby="places-heading">
+      <div class="directory-head"><h2 id="places-heading">Campus locations</h2><span id="result-count">20 locations</span></div>
+      <div id="place-list"></div>
+    </section>
+
+    <footer class="footer"><span><strong>Excel Engineering College</strong> · NH-544, Komarapalayam</span><span>Distance and route times are estimates.</span></footer>
+  </main>
+
+  <script>
+    (() => {
+      const NS = "http://www.w3.org/2000/svg";
+      const CATEGORIES = {
+        departments: "Departments",
+        hostels: "Hostels & Mess",
+        amenities: "Amenities & Food",
+        administrative: "Administrative & Services",
+        medical: "Medical & Sports",
+      };
+      const COLORS = {
+        departments: "#18766f",
+        hostels: "#bd554b",
+        amenities: "#b18120",
+        administrative: "#274d62",
+        medical: "#905266",
+      };
+      const LOCATIONS = [
+        { id: "main-block", number: 1, name: "Main Block (Administrative Block)", short: "Main Block", category: "administrative", point: [692, 478], node: "center", aliases: ["admin", "administrative", "office"], description: "Central administrative offices for college services and campus administration.", hours: "Office hours vary; confirm with the administration office." },
+        { id: "girls-hostel", number: 2, name: "Girls Hostel", short: "Girls Hostel", category: "hostels", point: [960, 245], node: "eastNorth", aliases: ["women hostel", "ladies hostel"], description: "Residential accommodation for women students.", hours: "Hostel access follows campus residence timings." },
+        { id: "girls-mess", number: 3, name: "Girls Hostel Mess", short: "Girls Mess", category: "hostels", point: [924, 332], node: "eastNorth", aliases: ["girls dining", "hostel dining"], description: "Dining facility serving residents of the girls hostel.", hours: "Meal timings are set by the hostel; check the notice board." },
+        { id: "boys-hostel", number: 4, name: "Boys Hostel", short: "Boys Hostel", category: "hostels", point: [169, 250], node: "westNorth", aliases: ["mens hostel"], description: "Residential accommodation for men students.", hours: "Hostel access follows campus residence timings." },
+        { id: "boys-mess", number: 5, name: "Boys Hostel Mess", short: "Boys Mess", category: "hostels", point: [275, 340], node: "westMid", aliases: ["boys dining", "hostel dining"], description: "Dining facility serving residents of the boys hostel.", hours: "Meal timings are set by the hostel; check the notice board." },
+        { id: "convention-centre", number: 6, name: "Convention Centre", short: "Convention Centre", category: "amenities", point: [1014, 478], node: "eastMid", aliases: ["auditorium", "convention hall"], description: "Venue for campus events, gatherings, and college functions.", hours: "Open for scheduled events; confirm bookings with campus staff." },
+        { id: "medical-block", number: 7, name: "Medical Block", short: "Medical Block", category: "medical", point: [180, 478], node: "westMid", aliases: ["clinic", "health centre", "medical center"], description: "Campus medical and first-aid services.", hours: "Service availability may vary; contact campus staff for urgent help." },
+        { id: "medical-canteen", number: 8, name: "Medical Canteen", short: "Medical Canteen", category: "amenities", point: [274, 582], node: "westSouth", aliases: ["medical cafe", "health block canteen"], description: "Additional canteen near the Medical Block, added as a separate searchable destination.", hours: "Hours vary; check the canteen notice board." },
+        { id: "medical-ground", number: 9, name: "Medical Ground", short: "Medical Ground", category: "medical", point: [170, 692], node: "ground", aliases: ["medical field", "clinic ground"], description: "Open ground beside the medical-side campus area.", hours: "Open campus area; follow posted campus access rules." },
+        { id: "billing-accounts", number: 10, name: "Billing Section / Accounts", short: "Billing / Accounts", category: "administrative", point: [704, 612], node: "south", aliases: ["billing", "accounts", "fees", "fee payment"], description: "Fee payments, billing queries, and student accounts support.", hours: "Office hours vary; confirm with the accounts office." },
+        { id: "bus-yard", number: 11, name: "Bus Parking Yard / Bus Stand", short: "Bus Yard", category: "administrative", point: [1016, 695], node: "bus", aliases: ["bus parking", "bus stand", "transport"], description: "Campus bus arrival, departure, and parking area.", hours: "Use the current transport schedule for bus timings." },
+        { id: "central-library", number: 12, name: "Central Library", short: "Central Library", category: "departments", point: [562, 384], node: "north", aliases: ["library", "books", "reading room"], description: "Central learning, reading, and library services.", hours: "Library hours are posted at the entrance." },
+        { id: "mechanical-block", number: 13, name: "Mechanical Engineering Block", short: "Mechanical", category: "departments", point: [430, 364], node: "westMid", aliases: ["mechanical", "mech", "mechanical engineering"], description: "Mechanical Engineering department and associated academic spaces.", hours: "Academic hours; confirm lab access with the department." },
+        { id: "computer-it", number: 14, name: "Computer Science & IT Block", short: "Computer Science & IT", category: "departments", point: [740, 352], node: "north", aliases: ["computer science", "cse", "it", "information technology"], description: "Computer Science and Information Technology academic departments.", hours: "Academic hours; confirm lab access with the department." },
+        { id: "welcome-block", number: 15, name: "Welcome Block / Main Gate", short: "Welcome Block", category: "administrative", point: [600, 660], node: "welcome", aliases: ["main gate", "entrance", "welcome", "visitor reception"], description: "Main visitor entrance and default starting point for campus routes.", hours: "Visitor access follows campus security hours." },
+        { id: "fusion-cafe", number: 16, name: "Fusion Cafe / Main Canteen", short: "Fusion Cafe", category: "amenities", point: [760, 430], node: "eastMid", aliases: ["fusion cafe", "main canteen", "canteen", "food"], description: "Main campus cafe and canteen for meals and refreshments.", hours: "Hours vary by academic schedule; check posted timings." },
+        { id: "placement-cell", number: 17, name: "Placement & Training Cell", short: "Placement Cell", category: "administrative", point: [780, 534], node: "eastMid", aliases: ["placement", "training", "career services", "tpo"], description: "Career guidance, placement support, and training coordination.", hours: "Office hours vary; confirm with the Placement Cell." },
+        { id: "sports-complex", number: 18, name: "Sports Complex / Main Ground", short: "Sports Complex", category: "medical", point: [384, 691], node: "ground", aliases: ["sports", "main ground", "playground", "stadium"], description: "Outdoor sports and recreation ground for campus activities.", hours: "Use follows campus sports schedules and access rules." },
+        { id: "student-helpdesk", number: 19, name: "Student Portal & Helpdesk", short: "Student Helpdesk", category: "administrative", point: [690, 576], node: "south", aliases: ["student portal", "helpdesk", "help desk", "student support"], description: "Student information, portal assistance, and general support point.", hours: "Support hours vary; check with the student services office." },
+        { id: "qr-scan-point", number: 20, name: "QR Routes Scan Point", short: "QR Scan Point", category: "administrative", point: [548, 724], node: "gate", aliases: ["qr", "qr scan", "scan point", "route scan"], description: "Suggested QR route check-in point beside the Main Gate.", hours: "Available at the Main Gate when campus access is open." },
+      ];
+      const ROAD_NODES = {
+        gate: [600, 750], welcome: [600, 670], south: [600, 620], center: [600, 480], north: [600, 280], upperCenter: [600, 190],
+        westSouth: [360, 620], westMid: [360, 480], westNorth: [360, 280], upperWest: [420, 190],
+        eastSouth: [850, 620], eastMid: [850, 480], eastNorth: [850, 280], upperEast: [850, 190], ground: [360, 700], bus: [1016, 700],
+      };
+      const ROAD_EDGES = [
+        ["gate", "welcome"], ["welcome", "south"], ["south", "center"], ["center", "north"], ["north", "upperCenter"],
+        ["south", "westSouth"], ["south", "eastSouth"], ["center", "westMid"], ["center", "eastMid"], ["north", "westNorth"], ["north", "eastNorth"],
+        ["westSouth", "westMid"], ["westMid", "westNorth"], ["westNorth", "upperWest"], ["upperWest", "upperCenter"], ["upperCenter", "upperEast"], ["upperEast", "eastNorth"],
+        ["eastSouth", "eastMid"], ["eastMid", "eastNorth"], ["ground", "westSouth"], ["eastSouth", "bus"],
+      ];
+
+      const mapSvg = document.getElementById("campus-map");
+      const pinsLayer = document.getElementById("place-pins");
+      const routeLayer = document.getElementById("route-layer");
+      const routeShadow = document.getElementById("route-shadow");
+      const routePath = document.getElementById("route-path");
+      const searchInput = document.getElementById("location-search");
+      const searchResults = document.getElementById("search-results");
+      const placeList = document.getElementById("place-list");
+      const fromSelect = document.getElementById("from-select");
+      const toSelect = document.getElementById("to-select");
+      const qrSelect = document.getElementById("qr-select");
+      const defaultView = { x: 0, y: 0, width: 1200, height: 800 };
+      let activeCategory = "all";
+      let selectedId = "central-library";
+      let currentOriginId = "welcome-block";
+      let dragging = false;
+      let lastPointer = null;
+
+      function svgElement(tag, attributes = {}) {
+        const element = document.createElementNS(NS, tag);
+        Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+        return element;
+      }
+
+      function locationById(id) {
+        return LOCATIONS.find((place) => place.id === id) || null;
+      }
+
+      function fillSelect(select, selectedId, placeholder = false) {
+        if (placeholder) {
+          const option = document.createElement("option");
+          option.value = "";
+          option.textContent = "Choose a destination";
+          option.disabled = true;
+          select.append(option);
+        }
+        LOCATIONS.forEach((place) => {
+          const option = document.createElement("option");
+          option.value = place.id;
+          option.textContent = `${place.number}. ${place.name}`;
+          select.append(option);
+        });
+        select.value = selectedId;
+      }
+
+      function renderPins() {
+        const fragment = document.createDocumentFragment();
+        LOCATIONS.forEach((place) => {
+          const pin = svgElement("g", {
+            class: "map-pin",
+            transform: `translate(${place.point[0]} ${place.point[1]})`,
+            tabindex: "0",
+            role: "button",
+            "data-id": place.id,
+            "aria-label": `Location ${place.number}: ${place.name}`,
+          });
+          const title = svgElement("title");
+          title.textContent = `${place.number}. ${place.name} - click to route here`;
+          const shadow = svgElement("circle", { class: "pin-shadow", cx: "1", cy: "3", r: "17" });
+          const core = svgElement("circle", { class: "pin-core", cx: "0", cy: "0", r: "16", fill: COLORS[place.category] });
+          const number = svgElement("text", { x: "0", y: "1" });
+          number.textContent = String(place.number);
+          pin.append(title, shadow, core, number);
+          pin.addEventListener("click", () => selectDestination(place.id));
+          pin.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              selectDestination(place.id);
+            }
+          });
+          fragment.append(pin);
+        });
+        pinsLayer.replaceChildren(fragment);
+        updatePinStates();
+      }
+
+      function matchesSearch(place, query) {
+        if (!query) return true;
+        const haystack = [place.name, place.category, CATEGORIES[place.category], ...place.aliases].join(" ").toLocaleLowerCase();
+        return haystack.includes(query);
+      }
+
+      function visiblePlaces(query = searchInput.value.trim().toLocaleLowerCase()) {
+        return LOCATIONS.filter((place) => (activeCategory === "all" || place.category === activeCategory) && matchesSearch(place, query));
+      }
+
+      function renderDirectory() {
+        const places = visiblePlaces();
+        document.getElementById("result-count").textContent = `${places.length} ${places.length === 1 ? "location" : "locations"}`;
+        if (!places.length) {
+          const empty = document.createElement("p");
+          empty.className = "no-results";
+          empty.textContent = "No locations match your search and filters.";
+          placeList.replaceChildren(empty);
+          updatePinStates();
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        places.forEach((place) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `place-card${place.id === selectedId ? " is-selected" : ""}`;
+          button.setAttribute("aria-label", `Navigate to ${place.name}`);
+          const number = document.createElement("span");
+          number.className = "place-card-number";
+          number.style.backgroundColor = COLORS[place.category];
+          number.textContent = String(place.number);
+          const content = document.createElement("span");
+          content.style.minWidth = "0";
+          const name = document.createElement("strong");
+          name.textContent = place.name;
+          const category = document.createElement("small");
+          category.textContent = CATEGORIES[place.category];
+          content.append(name, category);
+          button.append(number, content);
+          button.addEventListener("click", () => selectDestination(place.id));
+          fragment.append(button);
+        });
+        placeList.replaceChildren(fragment);
+        updatePinStates();
+      }
+
+      function renderSearchResults() {
+        const query = searchInput.value.trim().toLocaleLowerCase();
+        if (!query) {
+          searchResults.replaceChildren();
+          searchResults.classList.remove("open");
+          searchInput.setAttribute("aria-expanded", "false");
+          renderDirectory();
+          return;
+        }
+        const matches = visiblePlaces(query).slice(0, 8);
+        const fragment = document.createDocumentFragment();
+        matches.forEach((place) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "search-result";
+          button.setAttribute("role", "option");
+          button.textContent = place.name;
+          const category = document.createElement("small");
+          category.textContent = CATEGORIES[place.category];
+          button.append(category);
+          button.addEventListener("click", () => {
+            searchInput.value = place.name;
+            searchResults.classList.remove("open");
+            searchInput.setAttribute("aria-expanded", "false");
+            renderDirectory();
+            selectDestination(place.id);
+          });
+          fragment.append(button);
+        });
+        searchResults.replaceChildren(fragment);
+        searchResults.classList.toggle("open", matches.length > 0);
+        searchInput.setAttribute("aria-expanded", String(matches.length > 0));
+        renderDirectory();
+      }
+
+      function updatePinStates() {
+        const matches = new Set(visiblePlaces().map((place) => place.id));
+        pinsLayer.querySelectorAll(".map-pin").forEach((pin) => {
+          const id = pin.dataset.id;
+          pin.classList.toggle("dimmed", !matches.has(id));
+          pin.classList.toggle("selected", id === selectedId);
+          pin.classList.toggle("origin", id === currentOriginId);
+        });
+      }
+
+      function shortestNodePath(start, end) {
+        if (start === end) return [start];
+        const adjacency = Object.fromEntries(Object.keys(ROAD_NODES).map((id) => [id, []]));
+        ROAD_EDGES.forEach(([a, b]) => {
+          const [ax, ay] = ROAD_NODES[a];
+          const [bx, by] = ROAD_NODES[b];
+          const weight = Math.hypot(bx - ax, by - ay);
+          adjacency[a].push([b, weight]);
+          adjacency[b].push([a, weight]);
+        });
+        const distances = Object.fromEntries(Object.keys(ROAD_NODES).map((id) => [id, Infinity]));
+        const previous = {};
+        const remaining = new Set(Object.keys(ROAD_NODES));
+        distances[start] = 0;
+        while (remaining.size) {
+          let nearest = null;
+          for (const node of remaining) if (nearest === null || distances[node] < distances[nearest]) nearest = node;
+          if (nearest === null || distances[nearest] === Infinity || nearest === end) break;
+          remaining.delete(nearest);
+          adjacency[nearest].forEach(([neighbor, weight]) => {
+            const candidate = distances[nearest] + weight;
+            if (candidate < distances[neighbor]) {
+              distances[neighbor] = candidate;
+              previous[neighbor] = nearest;
+            }
+          });
+        }
+        if (!Number.isFinite(distances[end])) return [start, end];
+        const path = [end];
+        while (path[0] !== start) path.unshift(previous[path[0]]);
+        return path;
+      }
+
+      function routeFor(origin, destination) {
+        if (origin.id === destination.id) return { points: [origin.point], distance: 0, minutes: 0, directions: [`You are already at ${destination.name}.`] };
+        const nodes = shortestNodePath(origin.node, destination.node);
+        const points = [origin.point, ...nodes.map((node) => ROAD_NODES[node]), destination.point];
+        const distanceUnits = points.slice(1).reduce((sum, point, index) => sum + Math.hypot(point[0] - points[index][0], point[1] - points[index][1]), 0);
+        const distance = Math.round(distanceUnits * 1.1 / 10) * 10;
+        const minutes = Math.max(1, Math.ceil(distance / 78));
+        const directions = [`Start at ${origin.name}.`];
+        let previousDirection = "";
+        points.slice(1).forEach((point, index) => {
+          const previous = points[index];
+          const dx = point[0] - previous[0];
+          const dy = point[1] - previous[1];
+          if (Math.abs(dx) + Math.abs(dy) < 1) return;
+          const direction = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "east" : "west") : (dy > 0 ? "south" : "north");
+          if (direction !== previousDirection) {
+            directions.push(`${previousDirection ? "At the next campus road, continue" : "Head"} ${direction} toward ${destination.short}.`);
+            previousDirection = direction;
+          }
+        });
+        directions.push(`Arrive at ${destination.name}.`);
+        return { points, distance, minutes, directions };
+      }
+
+      function drawRoute() {
+        const origin = locationById(currentOriginId);
+        const destination = locationById(selectedId);
+        if (!origin || !destination) return;
+        const route = routeFor(origin, destination);
+        const pathData = route.points.map(([x, y], index) => `${index ? "L" : "M"}${x} ${y}`).join(" ");
+        routeShadow.setAttribute("d", pathData);
+        routePath.setAttribute("d", pathData);
+        routeLayer.style.display = "";
+        document.getElementById("distance-value").textContent = `${route.distance} m`;
+        document.getElementById("time-value").textContent = `${route.minutes} min walk`;
+        const list = document.getElementById("directions-list");
+        const fragment = document.createDocumentFragment();
+        route.directions.forEach((direction, index) => {
+          const item = document.createElement("li");
+          const number = document.createElement("span");
+          number.className = "step-number";
+          number.textContent = String(index + 1);
+          const text = document.createElement("span");
+          text.textContent = direction;
+          item.append(number, text);
+          fragment.append(item);
+        });
+        list.replaceChildren(fragment);
+      }
+
+      function centerOn(point, scale = 1) {
+        const view = mapSvg.viewBox.baseVal;
+        const width = Math.max(380, Math.min(defaultView.width, view.width * scale));
+        const height = width * (defaultView.height / defaultView.width);
+        const x = Math.max(0, Math.min(defaultView.width - width, point[0] - width / 2));
+        const y = Math.max(0, Math.min(defaultView.height - height, point[1] - height / 2));
+        mapSvg.setAttribute("viewBox", `${x} ${y} ${width} ${height}`);
+      }
+
+      function selectDestination(id) {
+        const place = locationById(id);
+        if (!place) return;
+        selectedId = id;
+        toSelect.value = id;
+        document.getElementById("selected-name").textContent = place.name;
+        document.getElementById("selected-category").textContent = CATEGORIES[place.category];
+        document.getElementById("selected-description").textContent = place.description;
+        document.getElementById("selected-hours").textContent = `Hours: ${place.hours}`;
+        document.getElementById("selected-number").textContent = String(place.number);
+        updatePinStates();
+        renderDirectory();
+        drawRoute();
+        centerOn(place.point, 0.88);
+      }
+
+      function changeOrigin(id) {
+        if (!locationById(id)) return;
+        currentOriginId = id;
+        fromSelect.value = id;
+        qrSelect.value = id;
+        updatePinStates();
+        drawRoute();
+      }
+
+      function clampView(x, y, width, height) {
+        return {
+          x: Math.max(0, Math.min(defaultView.width - width, x)),
+          y: Math.max(0, Math.min(defaultView.height - height, y)),
+        };
+      }
+
+      function zoomAt(factor, clientX, clientY) {
+        const rect = mapSvg.getBoundingClientRect();
+        const view = mapSvg.viewBox.baseVal;
+        const px = clientX === undefined ? rect.width / 2 : clientX - rect.left;
+        const py = clientY === undefined ? rect.height / 2 : clientY - rect.top;
+        const focusX = view.x + px / rect.width * view.width;
+        const focusY = view.y + py / rect.height * view.height;
+        const nextWidth = Math.max(380, Math.min(defaultView.width, view.width * factor));
+        const nextHeight = nextWidth * (defaultView.height / defaultView.width);
+        const next = clampView(focusX - (focusX - view.x) * nextWidth / view.width, focusY - (focusY - view.y) * nextHeight / view.height, nextWidth, nextHeight);
+        mapSvg.setAttribute("viewBox", `${next.x} ${next.y} ${nextWidth} ${nextHeight}`);
+      }
+
+      fillSelect(fromSelect, "welcome-block");
+      fillSelect(toSelect, "central-library");
+      fillSelect(qrSelect, "welcome-block");
+      renderPins();
+      renderDirectory();
+      selectDestination("central-library");
+
+      searchInput.addEventListener("input", renderSearchResults);
+      searchInput.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          searchResults.classList.remove("open");
+          searchInput.setAttribute("aria-expanded", "false");
+        }
+        if (event.key === "Enter") {
+          const first = visiblePlaces()[0];
+          if (first) {
+            event.preventDefault();
+            selectDestination(first.id);
+            searchResults.classList.remove("open");
+            searchInput.setAttribute("aria-expanded", "false");
+          }
+        }
+      });
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".search-wrap")) {
+          searchResults.classList.remove("open");
+          searchInput.setAttribute("aria-expanded", "false");
+        }
+      });
+      document.getElementById("category-filters").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-category]");
+        if (!button) return;
+        activeCategory = button.dataset.category;
+        document.querySelectorAll(".filter-chip").forEach((chip) => chip.setAttribute("aria-pressed", String(chip === button)));
+        renderDirectory();
+        if (searchInput.value.trim()) renderSearchResults();
+      });
+      fromSelect.addEventListener("change", () => changeOrigin(fromSelect.value));
+      toSelect.addEventListener("change", () => selectDestination(toSelect.value));
+      document.getElementById("navigate-here").addEventListener("click", () => selectDestination(selectedId));
+      document.getElementById("navigate-button").addEventListener("click", () => selectDestination(toSelect.value));
+      document.getElementById("scan-button").addEventListener("click", () => changeOrigin(qrSelect.value));
+      document.querySelectorAll("[data-scan]").forEach((button) => button.addEventListener("click", () => changeOrigin(button.dataset.scan)));
+
+      document.getElementById("zoom-in").addEventListener("click", () => zoomAt(.8));
+      document.getElementById("zoom-out").addEventListener("click", () => zoomAt(1.25));
+      document.getElementById("zoom-reset").addEventListener("click", () => {
+        mapSvg.setAttribute("viewBox", `${defaultView.x} ${defaultView.y} ${defaultView.width} ${defaultView.height}`);
+      });
+      mapSvg.addEventListener("wheel", (event) => {
+        event.preventDefault();
+        zoomAt(event.deltaY < 0 ? .88 : 1.14, event.clientX, event.clientY);
+      }, { passive: false });
+      mapSvg.addEventListener("pointerdown", (event) => {
+        if (event.target.closest(".map-pin")) return;
+        dragging = true;
+        lastPointer = [event.clientX, event.clientY];
+        mapSvg.classList.add("is-dragging");
+        mapSvg.setPointerCapture(event.pointerId);
+      });
+      mapSvg.addEventListener("pointermove", (event) => {
+        if (!dragging || !lastPointer) return;
+        const rect = mapSvg.getBoundingClientRect();
+        const view = mapSvg.viewBox.baseVal;
+        const dx = (event.clientX - lastPointer[0]) * view.width / rect.width;
+        const dy = (event.clientY - lastPointer[1]) * view.height / rect.height;
+        const next = clampView(view.x - dx, view.y - dy, view.width, view.height);
+        mapSvg.setAttribute("viewBox", `${next.x} ${next.y} ${view.width} ${view.height}`);
+        lastPointer = [event.clientX, event.clientY];
+      });
+      function endDrag() {
+        dragging = false;
+        lastPointer = null;
+        mapSvg.classList.remove("is-dragging");
+      }
+      mapSvg.addEventListener("pointerup", endDrag);
+      mapSvg.addEventListener("pointercancel", endDrag);
+    })();
+  </script>
+</body>
+</html>

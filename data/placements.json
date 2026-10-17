@@ -1,0 +1,64 @@
+{
+  "updated": "2026-10-16",
+  "stats": {
+    "companies": 86,
+    "offers": 412,
+    "highestCtc": "12 LPA",
+    "averageCtc": "4.2 LPA"
+  },
+  "drives": [
+    {
+      "id": "tcs-nqt",
+      "company": "TCS",
+      "role": "Ninja / Digital",
+      "date": "12 Nov 2026",
+      "eligibility": "B.E. / B.Tech — all branches, 6.0 CGPA",
+      "status": "Registration open",
+      "type": "On campus"
+    },
+    {
+      "id": "infosys-sp",
+      "company": "Infosys",
+      "role": "Systems Engineer",
+      "date": "20 Nov 2026",
+      "eligibility": "CSE, IT, ECE, EEE — 6.5 CGPA",
+      "status": "Coming soon",
+      "type": "On campus"
+    },
+    {
+      "id": "hyundai-intern",
+      "company": "Hyundai Motor India",
+      "role": "Graduate Engineer Trainee",
+      "date": "05 Dec 2026",
+      "eligibility": "Mech, Auto, Aero, EEE",
+      "status": "Shortlist in progress",
+      "type": "PDC partner drive"
+    },
+    {
+      "id": "wipro-elite",
+      "company": "Wipro",
+      "role": "Project Engineer",
+      "date": "18 Dec 2026",
+      "eligibility": "All UG engineering, 6.0 CGPA, no standing arrears",
+      "status": "Registration open",
+      "type": "Off campus / pool"
+    }
+  ],
+  "news": [
+    {
+      "title": "Placement orientation for final years",
+      "date": "08 Oct 2026",
+      "body": "HR & Placement will brief resume format, aptitude calendar, and mock GD slots in the seminar hall next to Block 13."
+    },
+    {
+      "title": "Internship fair at Hyundai PDC",
+      "date": "02 Oct 2026",
+      "body": "Partner companies will collect intern profiles at the Hyundai Professional Development Center (spot 9 on the campus map)."
+    },
+    {
+      "title": "Higher studies desk",
+      "date": "25 Sep 2026",
+      "body": "GATE / IELTS counselling every Wednesday 4 PM at the Placement cell."
+    }
+  ]
+}

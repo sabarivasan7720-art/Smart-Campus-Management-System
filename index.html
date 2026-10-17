@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>window.location.replace("campus-navigation.html");</script>
+  <title>Campus Map · Excel Engineering College</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { navy: "#0B1F4B", gold: "#C9A227", cream: "#F7F3EA" },
+          fontFamily: { sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"] },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+</head>
+<body class="bg-cream text-navy">
+  <header class="sticky top-0 z-40 border-b border-navy/10 bg-navy text-cream">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="assets/logo.svg" alt="" class="h-10 w-10" />
+        <span>
+          <span class="block text-sm font-extrabold tracking-wide text-gold">EXCEL ENGINEERING COLLEGE</span>
+          <span class="block text-xs text-cream/70">Smart Campus Navigation</span>
+        </span>
+      </a>
+      <nav class="hidden items-center gap-1 text-sm font-medium md:flex">
+        <a class="rounded-lg bg-gold/20 px-3 py-2 text-gold" href="index.html">Map</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="qr.html">QR Routes</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="portal.html">Portal</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="hostel.html">Hostel</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="placement.html">Placement</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="cafe.html">Fusion Café</a>
+      </nav>
+      <details class="relative md:hidden">
+        <summary class="cursor-pointer list-none rounded-lg bg-white/10 px-3 py-2 text-sm">Menu</summary>
+        <div class="absolute right-0 mt-2 w-48 rounded-xl bg-navy p-2 shadow-xl ring-1 ring-white/10">
+          <a class="block rounded-lg px-3 py-2 text-gold" href="index.html">Map</a>
+          <a class="block rounded-lg px-3 py-2" href="qr.html">QR Routes</a>
+          <a class="block rounded-lg px-3 py-2" href="portal.html">Portal</a>
+          <a class="block rounded-lg px-3 py-2" href="hostel.html">Hostel</a>
+          <a class="block rounded-lg px-3 py-2" href="placement.html">Placement</a>
+          <a class="block rounded-lg px-3 py-2" href="cafe.html">Fusion Café</a>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <section class="border-b border-navy/10 bg-navy">
+    <div class="mx-auto max-w-7xl px-4 py-8 md:py-10">
+      <p class="text-sm font-semibold uppercase tracking-widest text-gold">Komarapalayam · Namakkal</p>
+      <h1 class="mt-2 max-w-3xl text-3xl font-extrabold text-cream md:text-4xl">Find any block on campus — Library, Mech, Hostels, and more.</h1>
+      <p class="mt-3 max-w-2xl text-cream/75">Search a destination. We highlight the pin and draw a walking route from the Welcome Block (Main Entrance).</p>
+    </div>
+  </section>
+
+  <main class="mx-auto max-w-7xl px-4 py-6">
+    <div class="sticky top-[64px] z-30 space-y-3 rounded-2xl bg-cream/95 py-3 backdrop-blur">
+      <div class="relative">
+        <label class="sr-only" for="search">Search campus location</label>
+        <input id="search" type="search" autocomplete="off" placeholder="Search Library, Mech Department, Hostel…"
+          class="w-full rounded-2xl border border-navy/15 bg-white px-5 py-3.5 text-base shadow-sm outline-none ring-gold focus:ring-2" />
+        <ul id="search-list" class="absolute z-40 mt-1 hidden max-h-80 w-full overflow-auto rounded-2xl border border-navy/10 bg-white shadow-xl"></ul>
+      </div>
+      <div id="filters" class="flex flex-wrap gap-2">
+        <button type="button" data-filter="all" class="rounded-full bg-navy px-4 py-2 text-sm font-semibold text-gold">All spots</button>
+        <button type="button" data-filter="departments" class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-navy ring-1 ring-navy/10">Departments</button>
+        <button type="button" data-filter="hostels" class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-navy ring-1 ring-navy/10">Hostels</button>
+        <button type="button" data-filter="amenities" class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-navy ring-1 ring-navy/10">Amenities &amp; Food</button>
+        <button type="button" data-filter="administrative" class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-navy ring-1 ring-navy/10">Administrative Blocks</button>
+      </div>
+    </div>
+
+    <div class="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.9fr)]">
+      <div class="overflow-hidden rounded-2xl border border-navy/10 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-navy/10 px-4 py-2 text-sm">
+          <span id="origin-chip" class="font-semibold">From: Welcome Block</span>
+          <button id="reset-route" type="button" class="text-slate-500 hover:text-navy">Reset map</button>
+        </div>
+        <div id="map" class="h-[62vh] min-h-[420px] w-full"></div>
+      </div>
+
+      <aside class="rounded-2xl border border-navy/10 bg-white p-5 shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-wider text-gold">Walking directions</p>
+        <h2 id="dest-title" class="mt-1 text-xl font-extrabold">Choose a destination</h2>
+        <p id="dest-meta" class="text-sm text-slate-500">Search or tap a numbered pin.</p>
+        <p id="dest-desc" class="mt-2 text-sm text-slate-600"></p>
+        <p id="empty-hint" class="mt-6 rounded-xl bg-cream p-4 text-sm text-slate-600">Tip: try “Library”, “Mech”, or “Girls Hostel”. Routes start at Welcome Block unless you open a QR landing page.</p>
+        <ol id="steps" class="mt-5 space-y-3 text-sm"></ol>
+        <a href="qr.html?loc=welcome-block" class="mt-6 inline-flex text-sm font-semibold text-navy underline decoration-gold">Simulate a Main Gate QR scan →</a>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="mt-10 border-t border-navy/10 bg-navy py-8 text-sm text-cream/80">
+    <div class="mx-auto max-w-7xl px-4">
+      <p class="font-semibold text-gold">Excel Engineering College</p>
+      <p>NH-544, Salem Main Road, Pallakkapalayam, Komarapalayam, Namakkal – 637303</p>
+      <p class="mt-1">+91 99655 23999 · info@excelcolleges.com</p>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/campus-data.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

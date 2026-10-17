@@ -1,0 +1,55 @@
+:root { color-scheme: light; }
+html, body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; }
+.leaflet-container { background: #d7e4c8; font-family: inherit; }
+#map { min-height: 520px; }
+@keyframes campusPulse {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+.campus-pin-pulse { animation: campusPulse 0.9s ease-in-out infinite; }
+.leaflet-popup-content-wrapper { border-radius: 12px; }
+
+.portal-main { padding-block: clamp(1.25rem, 4vw, 2.5rem); }
+.portal-dashboard-header { gap: 1rem; }
+.portal-dashboard-header > div { min-width: 0; }
+#who { overflow-wrap: anywhere; }
+.portal-stat-grid,
+.portal-summary-grid { display: grid; gap: 1rem; }
+.portal-stat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.portal-summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.portal-card { min-width: 0; transition: transform 180ms ease, box-shadow 180ms ease; }
+.portal-stat-card { min-height: 7rem; display: flex; flex-direction: column; justify-content: center; }
+.portal-summary-card { min-height: 5.5rem; }
+.portal-task-form { width: min(100%, 28rem); }
+.portal-table-wrap { max-width: 100%; -webkit-overflow-scrolling: touch; }
+.portal-data-table { min-width: 40rem; width: 100%; }
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .portal-card:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgb(11 31 75 / 12%); }
+}
+
+@media (max-width: 640px) {
+  .portal-dashboard-header { align-items: flex-start; }
+  .portal-stat-grid,
+  .portal-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+  .portal-stat-card:last-child,
+  .portal-summary-card:last-child { grid-column: 1 / -1; }
+  .portal-stat-card { min-height: 5.75rem; padding: 1rem; }
+  .portal-summary-card { min-height: 5rem; }
+  .portal-task-form { width: 100%; }
+  .portal-add-task { flex-shrink: 0; }
+  .portal-data-table { min-width: 38rem; }
+  #logout { flex-shrink: 0; padding-inline: 0.75rem; }
+}
+
+@media (max-width: 360px) {
+  .portal-stat-grid { grid-template-columns: 1fr; }
+  .portal-stat-card:last-child { grid-column: auto; }
+  .portal-task-form { align-items: stretch; flex-direction: column; }
+  .portal-add-task { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-card { transition: none; }
+}

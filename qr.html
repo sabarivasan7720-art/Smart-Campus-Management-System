@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QR Walking Routes · Excel Engineering College</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { navy: "#0B1F4B", gold: "#C9A227", cream: "#F7F3EA" },
+          fontFamily: { sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"] },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+</head>
+<body class="bg-cream text-navy">
+  <header class="sticky top-0 z-40 border-b border-navy/10 bg-navy text-cream">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="assets/logo.svg" alt="" class="h-10 w-10" />
+        <span>
+          <span class="block text-sm font-extrabold tracking-wide text-gold">EXCEL ENGINEERING COLLEGE</span>
+          <span class="block text-xs text-cream/70">QR location check-in</span>
+        </span>
+      </a>
+      <nav class="hidden items-center gap-1 text-sm font-medium md:flex">
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="index.html">Map</a>
+        <a class="rounded-lg bg-gold/20 px-3 py-2 text-gold" href="qr.html">QR Routes</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="portal.html">Portal</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="hostel.html">Hostel</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="placement.html">Placement</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="cafe.html">Fusion Café</a>
+      </nav>
+      <details class="relative md:hidden">
+        <summary class="cursor-pointer list-none rounded-lg bg-white/10 px-3 py-2 text-sm">Menu</summary>
+        <div class="absolute right-0 mt-2 w-48 rounded-xl bg-navy p-2 shadow-xl ring-1 ring-white/10">
+          <a class="block rounded-lg px-3 py-2" href="index.html">Map</a>
+          <a class="block rounded-lg px-3 py-2 text-gold" href="qr.html">QR Routes</a>
+          <a class="block rounded-lg px-3 py-2" href="portal.html">Portal</a>
+          <a class="block rounded-lg px-3 py-2" href="hostel.html">Hostel</a>
+          <a class="block rounded-lg px-3 py-2" href="placement.html">Placement</a>
+          <a class="block rounded-lg px-3 py-2" href="cafe.html">Fusion Café</a>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-4 py-6">
+    <div id="qr-banner" class="rounded-2xl bg-navy px-5 py-4 text-lg font-bold text-gold">You are at Welcome Block</div>
+    <p class="mt-3 max-w-3xl text-sm text-slate-600">This simulates scanning a poster QR on campus. Real posters should point to <code class="rounded bg-white px-1">qr.html?loc=welcome-block</code> (or another location id). Pick a destination for a walking route from your current spot.</p>
+
+    <div class="mt-4 grid gap-3 md:grid-cols-2">
+      <label class="block text-sm font-semibold">Current location (scanned)
+        <select id="origin-select" class="mt-1 w-full rounded-xl border border-navy/15 bg-white px-3 py-2.5 font-normal"></select>
+      </label>
+      <label class="block text-sm font-semibold">Go to
+        <select id="dest-select" class="mt-1 w-full rounded-xl border border-navy/15 bg-white px-3 py-2.5 font-normal"></select>
+      </label>
+    </div>
+
+    <div class="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,0.9fr)]">
+      <div id="map" class="h-[55vh] min-h-[380px] overflow-hidden rounded-2xl border border-navy/10 bg-white"></div>
+      <aside class="rounded-2xl border border-navy/10 bg-white p-5">
+        <h2 id="dest-title" class="text-xl font-extrabold">Destination</h2>
+        <p id="dest-meta" class="text-sm text-slate-500"></p>
+        <ol id="steps" class="mt-5 space-y-3 text-sm"></ol>
+      </aside>
+    </div>
+
+    <h2 class="mt-10 text-lg font-extrabold">Simulate other QR posters</h2>
+    <p class="mb-3 text-sm text-slate-600">Click a poster to set “You are here”. Print these URLs as QR codes later.</p>
+    <div id="poster-grid" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"></div>
+  </main>
+
+  <footer class="mt-10 border-t border-navy/10 bg-navy py-8 text-sm text-cream/80">
+    <div class="mx-auto max-w-7xl px-4">
+      <p class="font-semibold text-gold">Excel Engineering College</p>
+      <p>NH-544, Salem Main Road, Pallakkapalayam, Komarapalayam, Namakkal – 637303</p>
+    </div>
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/campus-data.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/qr.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Placement Cell · Excel Engineering College</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { navy: "#0B1F4B", gold: "#C9A227", cream: "#F7F3EA" },
+          fontFamily: { sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"] },
+        },
+      },
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+</head>
+<body class="bg-cream text-navy">
+  <header class="sticky top-0 z-40 bg-navy text-cream">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="assets/logo.svg" alt="" class="h-10 w-10" />
+        <span class="text-sm font-extrabold tracking-wide text-gold">EXCEL ENGINEERING COLLEGE</span>
+      </a>
+      <nav class="hidden gap-1 text-sm font-medium md:flex">
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="index.html">Map</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="qr.html">QR Routes</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="portal.html">Portal</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="hostel.html">Hostel</a>
+        <a class="rounded-lg bg-gold/20 px-3 py-2 text-gold" href="placement.html">Placement</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="cafe.html">Fusion Café</a>
+      </nav>
+      <a class="md:hidden text-sm" href="index.html">Map</a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl space-y-8 px-4 py-10">
+    <div>
+      <h1 class="text-3xl font-extrabold">Placement Cell</h1>
+      <p class="mt-1 text-slate-600">Recruitment updates and sample campus-drive news. HR &amp; Placement sit in block 13 — use the map to walk there.</p>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-4">
+      <article class="rounded-2xl bg-navy p-4 text-cream"><p class="text-xs text-gold">Companies</p><p id="stat-companies" class="text-2xl font-extrabold">—</p></article>
+      <article class="rounded-2xl bg-white p-4 ring-1 ring-navy/10"><p class="text-xs text-slate-500">Offers</p><p id="stat-offers" class="text-2xl font-extrabold">—</p></article>
+      <article class="rounded-2xl bg-white p-4 ring-1 ring-navy/10"><p class="text-xs text-slate-500">Highest CTC</p><p id="stat-high" class="text-2xl font-extrabold">—</p></article>
+      <article class="rounded-2xl bg-white p-4 ring-1 ring-navy/10"><p class="text-xs text-slate-500">Average CTC</p><p id="stat-avg" class="text-2xl font-extrabold">—</p></article>
+    </div>
+    <h2 class="text-xl font-bold">Upcoming drives</h2>
+    <div id="drives" class="grid gap-4 md:grid-cols-2"></div>
+    <h2 class="text-xl font-bold">News</h2>
+    <div id="news" class="rounded-2xl bg-white px-5 ring-1 ring-navy/10"></div>
+  </main>
+  <footer class="mt-10 bg-navy py-8 text-sm text-cream/80">
+    <div class="mx-auto max-w-7xl px-4">HR &amp; Placement · Block 13 · Excel Engineering College</div>
+  </footer>
+  <script src="js/placement.js"></script>
+</body>
+</html>

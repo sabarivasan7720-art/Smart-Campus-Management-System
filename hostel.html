@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hostel Management · Excel Engineering College</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { navy: "#0B1F4B", gold: "#C9A227", cream: "#F7F3EA" },
+          fontFamily: { sans: ["Plus Jakarta Sans", "system-ui", "sans-serif"] },
+        },
+      },
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+</head>
+<body class="bg-cream text-navy">
+  <header class="sticky top-0 z-40 bg-navy text-cream">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+      <a href="index.html" class="flex items-center gap-3">
+        <img src="assets/logo.svg" alt="" class="h-10 w-10" />
+        <span class="text-sm font-extrabold tracking-wide text-gold">EXCEL ENGINEERING COLLEGE</span>
+      </a>
+      <nav class="hidden gap-1 text-sm font-medium md:flex">
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="index.html">Map</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="qr.html">QR Routes</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="portal.html">Portal</a>
+        <a class="rounded-lg bg-gold/20 px-3 py-2 text-gold" href="hostel.html">Hostel</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="placement.html">Placement</a>
+        <a class="rounded-lg px-3 py-2 hover:bg-white/10" href="cafe.html">Fusion Café</a>
+      </nav>
+      <a class="md:hidden text-sm" href="index.html">Map</a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl space-y-8 px-4 py-10">
+    <div>
+      <h1 class="text-3xl font-extrabold">Hostel Management</h1>
+      <p class="mt-1 text-slate-600">Sample room directory and maintenance complaints stored in this browser only.</p>
+      <a class="mt-2 inline-block text-sm font-semibold underline decoration-gold" href="index.html">Show hostels on the map</a>
+    </div>
+
+    <section class="overflow-x-auto rounded-2xl bg-white ring-1 ring-navy/10">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-navy text-gold">
+          <tr>
+            <th class="px-4 py-3">Room</th>
+            <th class="px-4 py-3">Block</th>
+            <th class="px-4 py-3">Type</th>
+            <th class="px-4 py-3">Status</th>
+          </tr>
+        </thead>
+        <tbody id="room-table"></tbody>
+      </table>
+    </section>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <form id="complaint-form" class="rounded-2xl bg-white p-6 ring-1 ring-navy/10">
+        <h2 class="text-lg font-bold">Maintenance complaint</h2>
+        <label class="mt-4 block text-sm font-semibold">Room
+          <select id="room-id" required class="mt-1 w-full rounded-xl border border-navy/15 px-3 py-2.5 font-normal">
+            <option value="" disabled selected>Select your room</option>
+          </select>
+        </label>
+        <label class="mt-3 block text-sm font-semibold">Category
+          <select id="category" required class="mt-1 w-full rounded-xl border border-navy/15 px-3 py-2.5 font-normal">
+            <option value="" disabled selected>Select a category</option>
+            <option>Electrical</option>
+            <option>Plumbing</option>
+            <option>Carpentry</option>
+            <option>Housekeeping</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label class="mt-3 block text-sm font-semibold">Details
+          <textarea id="detail" required minlength="12" maxlength="300" rows="3" aria-describedby="detail-help" class="mt-1 w-full rounded-xl border border-navy/15 px-3 py-2.5 font-normal" placeholder="Describe the issue and where it occurs"></textarea>
+        </label>
+        <p id="detail-help" class="mt-1 text-xs text-slate-500">Enter at least 12 characters, up to 300.</p>
+        <p id="form-feedback" class="mt-3 text-sm" role="status" aria-live="polite"></p>
+        <button type="submit" class="mt-4 w-full rounded-xl bg-navy py-3 font-semibold text-gold">Submit ticket</button>
+      </form>
+      <div>
+        <h2 class="mb-3 text-lg font-bold">Your tickets</h2>
+        <div id="ticket-list" class="space-y-3"></div>
+      </div>
+    </div>
+  </main>
+  <footer class="mt-10 bg-navy py-8 text-sm text-cream/80">
+    <div class="mx-auto max-w-7xl px-4">Boys Hostel I–III · Pink &amp; Deluxe Girls Hostel</div>
+  </footer>
+  <script src="js/hostel.js"></script>
+</body>
+</html>

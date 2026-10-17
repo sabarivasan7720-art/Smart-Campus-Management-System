@@ -1,0 +1,486 @@
+{
+  "college": {
+    "name": "Excel Engineering College",
+    "shortName": "EEC",
+    "address": "NH-544, Salem Main Road, Pallakkapalayam, Komarapalayam, Namakkal – 637303, Tamil Nadu",
+    "phone": "+91 99655 23999",
+    "email": "info@excelcolleges.com"
+  },
+  "map": {
+    "width": 2000,
+    "height": 1400,
+    "image": "assets/campus-map.svg",
+    "pixelsPerMinute": 85,
+    "defaultOrigin": "welcome-block"
+  },
+  "categories": [
+    { "id": "all", "label": "All spots" },
+    { "id": "departments", "label": "Departments" },
+    { "id": "hostels", "label": "Hostels" },
+    { "id": "amenities", "label": "Amenities & Food" },
+    { "id": "administrative", "label": "Administrative Blocks" }
+  ],
+  "walkGraph": {
+    "nodes": {
+      "gate": [1000, 1340],
+      "welcome": [1000, 1240],
+      "mainS": [1000, 1095],
+      "mainM": [1000, 700],
+      "mainLib": [1000, 460],
+      "mainN": [1000, 235],
+      "westS": [345, 1095],
+      "westM": [345, 700],
+      "westN": [345, 235],
+      "eastS": [1445, 1095],
+      "eastM": [1445, 700],
+      "eastN": [1445, 235],
+      "play": [620, 920],
+      "midWest": [620, 700],
+      "midEast": [1180, 700],
+      "cafeJ": [1280, 460],
+      "girlsJ": [1780, 700],
+      "northEast": [1760, 235]
+    },
+    "edges": [
+      ["gate", "welcome"],
+      ["welcome", "mainS"],
+      ["mainS", "mainM"],
+      ["mainM", "mainLib"],
+      ["mainLib", "mainN"],
+      ["mainS", "westS"],
+      ["mainS", "eastS"],
+      ["mainM", "westM"],
+      ["mainM", "eastM"],
+      ["mainN", "westN"],
+      ["mainN", "eastN"],
+      ["westS", "westM"],
+      ["westM", "westN"],
+      ["eastS", "eastM"],
+      ["eastM", "eastN"],
+      ["play", "mainS"],
+      ["play", "midWest"],
+      ["midWest", "mainM"],
+      ["midWest", "westM"],
+      ["midEast", "mainM"],
+      ["midEast", "eastM"],
+      ["cafeJ", "mainLib"],
+      ["cafeJ", "eastM"],
+      ["girlsJ", "eastM"],
+      ["eastN", "northEast"],
+      ["mainN", "northEast"]
+    ]
+  },
+  "locations": [
+    {
+      "id": "welcome-block",
+      "number": 1,
+      "name": "Welcome Block",
+      "aliases": ["main gate", "main entrance", "entrance", "welcome", "gate"],
+      "category": "administrative",
+      "coords": [1000, 1240],
+      "snap": "welcome",
+      "landmark": "Main entrance on NH-544",
+      "description": "Visitor reception, security, and the official starting point for campus walking routes.",
+      "routesFrom": {}
+    },
+    {
+      "id": "temple",
+      "number": 2,
+      "name": "Temple & Mega Rain Water Harvest Tank",
+      "aliases": ["temple", "2a", "rain water", "tank", "kovil"],
+      "category": "amenities",
+      "coords": [480, 1220],
+      "snap": "westS",
+      "landmark": "West of the main gate",
+      "description": "Campus temple with the 2A mega rain-water harvest tank beside it.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 1095], [480, 1095], [480, 1220]],
+          "steps": [
+            "Enter via the Main Gate and stand at the Welcome Block.",
+            "Turn left (west) onto the front campus road.",
+            "Walk past the lawn; the temple and 2A rain-water tank are on your left near the boundary."
+          ]
+        }
+      }
+    },
+    {
+      "id": "public-school",
+      "number": 3,
+      "name": "Excel Public School – CBSE",
+      "aliases": ["public school", "cbse", "school", "eps"],
+      "category": "administrative",
+      "coords": [220, 980],
+      "snap": "westS",
+      "landmark": "Northwest of the temple",
+      "description": "Excel Public School (CBSE) campus block for school students.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 1095], [345, 1095], [220, 1095], [220, 980]],
+          "steps": [
+            "Enter via the Main Gate at the Welcome Block.",
+            "Take the west service road along the front of campus.",
+            "Continue past the temple cluster; Excel Public School is on your left."
+          ]
+        }
+      }
+    },
+    {
+      "id": "civil-eec",
+      "number": 4,
+      "name": "Civil Department, EEC",
+      "aliases": ["civil", "eec", "civil department", "civil engg"],
+      "category": "departments",
+      "coords": [1480, 1180],
+      "snap": "eastS",
+      "landmark": "East of Welcome Block",
+      "description": "Civil Engineering block of Excel Engineering College.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 1095], [1445, 1095], [1480, 1095], [1480, 1180]],
+          "steps": [
+            "Enter via the Main Gate and pass the Welcome Block.",
+            "Turn right (east) on the front academic road.",
+            "Civil Department / EEC is on your right, close to the entrance boulevard."
+          ]
+        }
+      }
+    },
+    {
+      "id": "sh-ece",
+      "number": 5,
+      "name": "S&H, ECE Block",
+      "aliases": ["s&h", "science and humanities", "ece", "ece block", "electronics"],
+      "category": "departments",
+      "coords": [1380, 980],
+      "snap": "eastS",
+      "landmark": "East academic belt",
+      "description": "Science & Humanities and Electronics & Communication Engineering block.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 1095], [1380, 1095], [1380, 980]],
+          "steps": [
+            "Enter via the Main Gate at Welcome Block.",
+            "Walk east on the first inner road.",
+            "S&H and ECE Block is ahead on your left after Civil."
+          ]
+        }
+      }
+    },
+    {
+      "id": "playground",
+      "number": 6,
+      "name": "Play Ground & Fitness Center",
+      "aliases": ["playground", "ground", "fitness", "sports", "gym", "play ground"],
+      "category": "amenities",
+      "coords": [620, 920],
+      "snap": "play",
+      "landmark": "Open field west of the main spine",
+      "description": "Sports ground and fitness center for students and staff.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 1095], [620, 1095], [620, 920]],
+          "steps": [
+            "Enter via the Main Gate.",
+            "Walk straight past Welcome Block, then veer left toward the open field.",
+            "Play Ground & Fitness Center is on the west lawn."
+          ]
+        }
+      }
+    },
+    {
+      "id": "boys-hostel-2",
+      "number": 7,
+      "name": "Boys Hostel II",
+      "aliases": ["boys hostel 2", "bh2", "hostel 2", "boys hostel ii"],
+      "category": "hostels",
+      "coords": [200, 720],
+      "snap": "westM",
+      "landmark": "West hostel belt",
+      "description": "Boys Hostel II residential block.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 1095], [1000, 700], [345, 700], [200, 700], [200, 720]],
+          "steps": [
+            "Enter via the Main Gate and walk north along the central avenue.",
+            "At the mid-campus crossroad, turn left (west).",
+            "Boys Hostel II is the first large residential block on the west side."
+          ]
+        }
+      }
+    },
+    {
+      "id": "boys-hostel-1-3",
+      "number": 8,
+      "name": "Boys Hostel I & III",
+      "aliases": ["boys hostel 1", "boys hostel 3", "bh1", "bh3", "hostel i", "hostel iii"],
+      "category": "hostels",
+      "coords": [200, 500],
+      "snap": "westM",
+      "landmark": "North of Boys Hostel II",
+      "description": "Combined Boys Hostel I and III complex.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 700], [345, 700], [345, 500], [200, 500]],
+          "steps": [
+            "Enter via Main Gate and follow the central avenue north.",
+            "Turn west at the Hyundai / mid-campus junction.",
+            "Continue past Boys Hostel II; Hostels I & III are further north on the same belt."
+          ]
+        }
+      }
+    },
+    {
+      "id": "hyundai-pdc",
+      "number": 9,
+      "name": "Hyundai Professional Development Center",
+      "aliases": ["hyundai", "pdc", "professional development", "training center"],
+      "category": "amenities",
+      "coords": [620, 700],
+      "snap": "midWest",
+      "landmark": "West of the central avenue",
+      "description": "Hyundai PDC for industry training and partner recruitment events.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 700], [620, 700]],
+          "steps": [
+            "Enter via the Main Gate and walk straight along the central avenue.",
+            "Stop at the mid-campus crossroad.",
+            "Hyundai Professional Development Center is on your left."
+          ]
+        }
+      }
+    },
+    {
+      "id": "mech-aero",
+      "number": 10,
+      "name": "A, A4 – Mech & Aeronautical Departments",
+      "aliases": ["mech", "mechanical", "aero", "aeronautical", "a4", "block a"],
+      "category": "departments",
+      "coords": [820, 640],
+      "snap": "mainM",
+      "landmark": "Blocks A / A4 on the central belt",
+      "description": "Mechanical and Aeronautical Engineering departments (Blocks A & A4).",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 700], [820, 700], [820, 640]],
+          "steps": [
+            "Enter via Main Gate and walk north past Welcome Block.",
+            "Continue along the avenue toward the academic core.",
+            "Mech & Aeronautical (A / A4) is just west of the central road."
+          ]
+        }
+      }
+    },
+    {
+      "id": "cse",
+      "number": 11,
+      "name": "Computer Science, CS & BS Departments",
+      "aliases": ["cse", "computer science", "cs", "bs", "it related", "computers"],
+      "category": "departments",
+      "coords": [1180, 640],
+      "snap": "midEast",
+      "landmark": "East of the central avenue",
+      "description": "Computer Science, CS, and BS department cluster.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 700], [1180, 700], [1180, 640]],
+          "steps": [
+            "Enter via the Main Gate and walk north on the central avenue.",
+            "At the mid-campus junction, bear right.",
+            "Computer Science / CS & BS is on your right before the library plaza."
+          ]
+        }
+      }
+    },
+    {
+      "id": "central-library",
+      "number": 12,
+      "name": "24×7 Central Library, IT, EEE, PCT",
+      "aliases": ["library", "central library", "24x7", "it", "eee", "pct", "information technology"],
+      "category": "departments",
+      "coords": [1000, 460],
+      "snap": "mainLib",
+      "landmark": "Heart of campus on the main spine",
+      "description": "24×7 Central Library with IT, EEE, and PCT departments in the same cluster.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 1095], [1000, 700], [1000, 460]],
+          "steps": [
+            "Enter via the Main Gate and walk through the Welcome Block.",
+            "Continue straight on the central avenue, past S&H / ECE on your right and the playground on your left.",
+            "Central Library (24×7) with IT, EEE and PCT is on the plaza — the library entrance faces you on the left of the walkway."
+          ]
+        }
+      }
+    },
+    {
+      "id": "nursing-hr",
+      "number": 13,
+      "name": "Excel Nursing College, HR & Placement",
+      "aliases": ["nursing", "hr", "placement", "placement cell", "training and placement"],
+      "category": "administrative",
+      "coords": [1480, 700],
+      "snap": "eastM",
+      "landmark": "East mid-campus",
+      "description": "Nursing College sharing the block with HR and the Placement Cell.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 700], [1445, 700], [1480, 700]],
+          "steps": [
+            "Enter via Main Gate and walk north to the mid-campus crossroad.",
+            "Turn right (east) toward the Nursing / Placement cluster.",
+            "Excel Nursing College with HR & Placement is on your right."
+          ]
+        }
+      }
+    },
+    {
+      "id": "girls-hostel",
+      "number": 14,
+      "name": "Pink & Deluxe Girls Hostel",
+      "aliases": ["girls hostel", "pink hostel", "deluxe hostel", "ladies hostel"],
+      "category": "hostels",
+      "coords": [1780, 560],
+      "snap": "girlsJ",
+      "landmark": "Far east residential zone",
+      "description": "Pink and Deluxe Girls Hostel complex.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 700], [1445, 700], [1780, 700], [1780, 560]],
+          "steps": [
+            "Enter via the Main Gate and follow the central avenue to mid-campus.",
+            "Turn east, pass Nursing / Placement on your right.",
+            "Continue to the far-east residential belt; Pink & Deluxe Girls Hostel is ahead."
+          ]
+        }
+      }
+    },
+    {
+      "id": "fusion-cafe",
+      "number": 15,
+      "name": "Excel Fusion Café",
+      "aliases": ["cafe", "café", "fusion", "food", "canteen", "fusion cafe"],
+      "category": "amenities",
+      "coords": [1280, 380],
+      "snap": "cafeJ",
+      "landmark": "Near the library plaza",
+      "description": "Campus café for meals, snacks, and token orders.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 460], [1280, 460], [1280, 380]],
+          "steps": [
+            "Enter via Main Gate and walk straight to the Central Library plaza.",
+            "From the library, take the short east path.",
+            "Excel Fusion Café is on your right, just north of the CSE cluster."
+          ]
+        }
+      }
+    },
+    {
+      "id": "a2-fashion",
+      "number": 16,
+      "name": "A2 – ECCS Fashion, Viscom, Microbiology, Biochemistry",
+      "aliases": ["a2", "fashion", "viscom", "microbiology", "biochemistry", "costume", "eccs"],
+      "category": "departments",
+      "coords": [1580, 380],
+      "snap": "eastN",
+      "landmark": "Northeast academic row",
+      "description": "Block A2: Fashion Costume Design, Visual Communication, Microbiology, and Biochemistry.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 460], [1445, 460], [1445, 380], [1580, 380]],
+          "steps": [
+            "Enter via Main Gate and walk north to the library plaza.",
+            "Turn east toward the A-blocks.",
+            "A2 (Fashion, Viscom, Microbiology, Biochemistry) is on the northeast academic row."
+          ]
+        }
+      }
+    },
+    {
+      "id": "architecture",
+      "number": 17,
+      "name": "A5 – Architecture College",
+      "aliases": ["architecture", "a5", "planning", "b.arch"],
+      "category": "departments",
+      "coords": [1760, 260],
+      "snap": "northEast",
+      "landmark": "Northeast corner",
+      "description": "Excel College of Architecture & Planning (Block A5).",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 235], [1445, 235], [1760, 235], [1760, 260]],
+          "steps": [
+            "Enter via Main Gate and stay on the central avenue all the way north.",
+            "At the north crossroad, turn right.",
+            "Architecture College (A5) is at the northeast corner of campus."
+          ]
+        }
+      }
+    },
+    {
+      "id": "education",
+      "number": 18,
+      "name": "A6 – College of Education",
+      "aliases": ["education", "a6", "b.ed", "college of education"],
+      "category": "departments",
+      "coords": [1520, 160],
+      "snap": "eastN",
+      "landmark": "North academic row",
+      "description": "Excel College of Education (Block A6).",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 235], [1445, 235], [1520, 235], [1520, 160]],
+          "steps": [
+            "Enter via Main Gate and walk the full length of the central avenue.",
+            "Turn east on the north road.",
+            "College of Education (A6) is on your left before Architecture."
+          ]
+        }
+      }
+    },
+    {
+      "id": "polytechnic",
+      "number": 19,
+      "name": "B3, B5 – Polytechnic College",
+      "aliases": ["polytechnic", "poly", "b3", "b5", "iti"],
+      "category": "departments",
+      "coords": [1120, 160],
+      "snap": "mainN",
+      "landmark": "North of the library",
+      "description": "Excel Polytechnic College blocks B3 and B5.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 460], [1000, 235], [1120, 235], [1120, 160]],
+          "steps": [
+            "Enter via Main Gate and walk north past Welcome Block, Mech/CSE, and the library.",
+            "Keep on the central avenue to the north end.",
+            "Polytechnic (B3, B5) is slightly to your right."
+          ]
+        }
+      }
+    },
+    {
+      "id": "staff-quarters",
+      "number": 20,
+      "name": "Staff Quarters",
+      "aliases": ["staff quarters", "quarters", "faculty housing", "staff housing"],
+      "category": "administrative",
+      "coords": [380, 220],
+      "snap": "westN",
+      "landmark": "Northwest residential zone",
+      "description": "On-campus housing for faculty and staff.",
+      "routesFrom": {
+        "welcome-block": {
+          "path": [[1000, 1240], [1000, 700], [345, 700], [345, 235], [380, 220]],
+          "steps": [
+            "Enter via Main Gate and walk north to mid-campus.",
+            "Turn west, pass the boys hostels on your left.",
+            "Continue to the northwest corner; Staff Quarters are ahead."
+          ]
+        }
+      }
+    }
+  ]
+}
